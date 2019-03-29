@@ -182,7 +182,7 @@ class App extends Component {
                 tooltip.hide();
             });
 
-      debugger
+      
 
         var drag_handler = d3
             .drag()
