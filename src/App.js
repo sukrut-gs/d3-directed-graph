@@ -156,14 +156,16 @@ class App extends Component {
             .style('stroke', 'red');
 
         //draw circles for the nodes
-        var node = g
+        var singleG = g
             .append('g')
             .attr('class', 'node')
             .style('fill', '#fff')
-            .selectAll('circle')
+            .selectAll('g')
             .data(nodes_data)
             .enter()
-            .append('g')
+            .append('g');
+
+        var node = singleG
             .append('svg:rect')
             .attr('class', function(d) {
                 return d.group;
@@ -181,6 +183,49 @@ class App extends Component {
                 tooltip.hide();
             });
 
+        var textNode = singleG
+            .append('svg:text')
+            .attr('class', function(d) {
+                return d.group;
+            })
+            .attr('dx', function(d) {
+                var X = Number(getXFromCSS(d));
+                    if(d.group == 'appservice')    
+                        return X + 25;
+                    return X + 50;
+            })
+            .attr('dy', function(d) {
+                var Y = Number(getYFromCSS(d));
+                    if (d.group === 'appservice') {
+                        return Y + 75;
+                    }
+                    return Y + 15;
+            })
+            .text((d) => d.name)
+            .attr('dominant-baseline', 'central');
+
+        var imageNode = singleG
+            .append('svg:image')
+            // .attr("class", "image-class")
+            .attr('class', function(d) {
+                return 'image-' + d.group;
+            })
+            .attr('xlink:href', (d) => d.img)
+            .attr('x', function(d) {
+                var X = Number(getXFromCSS(d));
+                if (d.group === 'appservice') {
+                    return X + 15;
+                }
+                return X + 10;
+            })
+            .attr('y', function(d) {
+                var Y = Number(getYFromCSS(d));
+                if (d.group === 'appservice') {
+                    return Y + 15;
+                }
+                return Y + 5;
+            });
+
         var drag_handler = d3
             .drag()
             .on('start', drag_start)
@@ -192,6 +237,32 @@ class App extends Component {
         var zoom_handler = d3.zoom().on('zoom', zoom_actions);
 
         zoom_handler(svg);
+
+        function getWidthFromCSS(d) {
+            const sourceClass = document.querySelector('.' + d.group);
+            const sourceStyle = getComputedStyle(sourceClass);
+            const width = sourceStyle.width.replace('px', '');
+            return width;
+        }
+        function getHeightFromCSS(d) {
+            const sourceClass = document.querySelector('.' + d.group);
+            const sourceStyle = getComputedStyle(sourceClass);
+            const height = sourceStyle.height.replace('px', '');
+            return height;
+        }
+
+        function getXFromCSS(d) {
+            const sourceClass = document.querySelector('.' + d.group);
+            const sourceStyle = getComputedStyle(sourceClass);
+            const X = sourceStyle.x.replace('px', '');
+            return X;
+        }
+        function getYFromCSS(d) {
+            const sourceClass = document.querySelector('.' + d.group);
+            const sourceStyle = getComputedStyle(sourceClass);
+            const Y = sourceStyle.y.replace('px', '');
+            return Y;
+        }
 
         function drag_start(d) {
             if (!d3.event.active) simulation.alphaTarget(0.9).restart();
@@ -216,6 +287,36 @@ class App extends Component {
         }
 
         function tickActions() {
+            imageNode
+                .attr('x', function(d) {
+                    var X = Number(getXFromCSS(d));
+                    if (d.group === 'appservice') {
+                        return X + 15;
+                    }
+                    return X + 10;
+                })
+                .attr('y', function(d) {
+                    var Y = Number(getYFromCSS(d));
+                    if (d.group === 'appservice') {
+                        return Y + 15;
+                    }
+                    return Y + 5;
+                });
+            textNode
+                .attr('dx', function(d) {
+                    var X = Number(getXFromCSS(d));
+                    if(d.group == 'appservice')    
+                        return X + 25;
+                    return X + 50;
+                })
+                .attr('dy', function(d) {
+                    var Y = Number(getYFromCSS(d));
+                    if (d.group === 'appservice') {
+                        return Y + 75;
+                    }
+                    return Y + 15;
+                });
+
             //update circle positions each tick of the simulation
             node.attr('x', function(d) {
                 return d.x;
