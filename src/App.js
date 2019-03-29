@@ -145,7 +145,6 @@ class App extends Component {
 
         simulation.on('tick', tickActions);
         var g = svg.append('g').attr('class', 'everything');
-        var gg = g.append('g');
         var link = g
             .append('g')
             .attr('class', 'links')
@@ -158,7 +157,7 @@ class App extends Component {
 
         //draw circles for the nodes
         var node = g
-        .append('g')
+            .append('g')
             .attr('class', 'node')
             .style('fill', '#fff')
             .selectAll('circle')
@@ -181,8 +180,6 @@ class App extends Component {
             .on('mouseout', function() {
                 tooltip.hide();
             });
-
-      
 
         var drag_handler = d3
             .drag()
