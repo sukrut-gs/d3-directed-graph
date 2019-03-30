@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import './styles/styles.css';
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as d3 from 'd3';
 import d3tooltip from 'd3-tooltip';
-// import d3Tip from "d3-tip";
 import AppServiceLogo from './images/app-service.svg';
 import ServerGroupLogo from './images/server-group.svg';
 import ServersLogo from './images/servers.svg';
@@ -170,6 +168,9 @@ class App extends Component {
             .attr('class', function(d) {
                 return d.group;
             })
+            .attr('id', function(d) {
+                return d.id;
+            })
             .on('mouseover', function(d) {
                 tooltip.html(
                     `<p id="toolTip-nodes-threats">Threats: ${d.threats} </p>` +
@@ -252,7 +253,10 @@ class App extends Component {
         }
 
         function getXFromCSS(d) {
-            const sourceClass = document.querySelector('.' + d.group);
+            let sourceClass = document.querySelector('.' + d.group);
+            if(document.querySelectorAll('text.'+d.group).length > 1) {
+                sourceClass = document.getElementById(d.id);
+            }
             const sourceStyle = getComputedStyle(sourceClass);
             const X = sourceStyle.x.replace('px', '');
             return X;
@@ -307,14 +311,36 @@ class App extends Component {
                     var X = Number(getXFromCSS(d));
                     if(d.group == 'appservice')    
                         return X + 25;
-                    return X + 50;
+                    else {
+                        let sourceClass = document.querySelector('.image-' + d.group);
+                        if(document.querySelectorAll('text.'+d.group).length > 1) {
+                            sourceClass = document.getElementById(d.id);
+                        }
+                        const sourceStyle = getComputedStyle(sourceClass);
+                        const X = sourceStyle.x.replace('px', '');
+                        if(d.group == 'sg') {
+                            return Number(X) + 3*((sourceStyle.width).replace('px',''));    
+                        }
+                        if(d.group == 'db') {
+                            return Number(X) + 0.35*((sourceStyle.width).replace('px',''));
+                        }
+                        return Number(X) + 1.5*((sourceStyle.width).replace('px',''));
+                    }
                 })
                 .attr('dy', function(d) {
                     var Y = Number(getYFromCSS(d));
                     if (d.group === 'appservice') {
-                        return Y + 75;
+                        const sourceClass = document.querySelector('.image-' + d.group);
+                        const sourceStyle = getComputedStyle(sourceClass);
+                        const Y = Number((sourceStyle.y.replace('px', ''))*5);
+                        return Y;
                     }
-                    return Y + 15;
+                    else {
+                        const sourceClass = document.querySelector('.image-' + d.group);
+                        const sourceStyle = getComputedStyle(sourceClass);
+                        const Y = sourceStyle.y.replace('px', '');
+                        return Number(Y) + 0.5*((sourceStyle.height).replace('px',''));
+                    }
                 });
 
             //update circle positions each tick of the simulation
