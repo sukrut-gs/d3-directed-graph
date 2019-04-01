@@ -59,7 +59,23 @@ class App extends Component {
             },
             {
                 id: 5,
+                name: 'mongo_d',
+                img: DatabaseLogo,
+                group: 'db',
+                reflexive: false,
+                threats: 12
+            },
+            {
+                id: 6,
                 name: 'mysql_d',
+                img: DatabaseLogo,
+                group: 'db',
+                reflexive: false,
+                threats: 12
+            },
+            {
+                id: 7,
+                name: 'mysql_33',
                 img: DatabaseLogo,
                 group: 'db',
                 reflexive: false,
@@ -92,14 +108,36 @@ class App extends Component {
                 traffic: Math.floor(Math.random() * 100 + 1)
             },
             {
-                source: nodes_data[3],
-                target: nodes_data[4],
+                source: nodes_data[4],
+                target: nodes_data[5],
                 left: false,
                 right: true,
                 traffic: Math.floor(Math.random() * 100 + 1)
             },
             {
-                source: nodes_data[3],
+                source: nodes_data[6],
+                target: nodes_data[5],
+                left: false,
+                right: true,
+                traffic: Math.floor(Math.random() * 100 + 1)
+            },
+            {
+                source: nodes_data[7],
+                target: nodes_data[5],
+                left: false,
+                right: true,
+                traffic: Math.floor(Math.random() * 100 + 1)
+            },
+            {
+                source: nodes_data[6],
+                target: nodes_data[4],
+                left: false,
+                right: true,
+                traffic: Math.floor(Math.random() * 100 + 1)
+            },
+
+            {
+                source: nodes_data[7],
                 target: nodes_data[5],
                 left: false,
                 right: true,
@@ -132,10 +170,10 @@ class App extends Component {
                 'yPosition',
                 d3.forceY(function(d) {
                     let forceY = 450;
-                    if (d.group == 'appservice') forceY = 10;
-                    else if (d.group == 'vport') forceY = 100;
-                    else if (d.group == 'sg') forceY = 190;
-                    else if (d.group == 'apps') forceY = 300;
+                    if (d.group == 'appservice') forceY = 100;
+                    else if (d.group == 'vport') forceY = 190;
+                    else if (d.group == 'sg') forceY = 270;
+                    else if (d.group == 'apps') forceY = 390;
                     return forceY;
                 })
             );
@@ -191,16 +229,15 @@ class App extends Component {
             })
             .attr('dx', function(d) {
                 var X = Number(getXFromCSS(d));
-                    if(d.group == 'appservice')    
-                        return X + 25;
-                    return X + 50;
+                if (d.group == 'appservice') return X + 25;
+                return X + 50;
             })
             .attr('dy', function(d) {
                 var Y = Number(getYFromCSS(d));
-                    if (d.group === 'appservice') {
-                        return Y + 75;
-                    }
-                    return Y + 15;
+                if (d.group === 'appservice') {
+                    return Y + 75;
+                }
+                return Y + 15;
             })
             .text((d) => d.name)
             .attr('dominant-baseline', 'central');
@@ -254,7 +291,7 @@ class App extends Component {
 
         function getXFromCSS(d) {
             let sourceClass = document.querySelector('.' + d.group);
-            if(document.querySelectorAll('text.'+d.group).length > 1) {
+            if (document.querySelectorAll('text.' + d.group).length > 1) {
                 sourceClass = document.getElementById(d.id);
             }
             const sourceStyle = getComputedStyle(sourceClass);
@@ -309,22 +346,21 @@ class App extends Component {
             textNode
                 .attr('dx', function(d) {
                     var X = Number(getXFromCSS(d));
-                    if(d.group == 'appservice')    
-                        return X + 25;
+                    if (d.group == 'appservice') return X + 25;
                     else {
                         let sourceClass = document.querySelector('.image-' + d.group);
-                        if(document.querySelectorAll('text.'+d.group).length > 1) {
+                        if (document.querySelectorAll('text.' + d.group).length > 1) {
                             sourceClass = document.getElementById(d.id);
                         }
                         const sourceStyle = getComputedStyle(sourceClass);
                         const X = sourceStyle.x.replace('px', '');
-                        if(d.group == 'sg') {
-                            return Number(X) + 3*((sourceStyle.width).replace('px',''));    
+                        if (d.group == 'sg') {
+                            return Number(X) + 3 * sourceStyle.width.replace('px', '');
                         }
-                        if(d.group == 'db') {
-                            return Number(X) + 0.35*((sourceStyle.width).replace('px',''));
+                        if (d.group == 'db') {
+                            return Number(X) + 0.35 * sourceStyle.width.replace('px', '');
                         }
-                        return Number(X) + 1.5*((sourceStyle.width).replace('px',''));
+                        return Number(X) + 1.5 * sourceStyle.width.replace('px', '');
                     }
                 })
                 .attr('dy', function(d) {
@@ -332,14 +368,13 @@ class App extends Component {
                     if (d.group === 'appservice') {
                         const sourceClass = document.querySelector('.image-' + d.group);
                         const sourceStyle = getComputedStyle(sourceClass);
-                        const Y = Number((sourceStyle.y.replace('px', ''))*5);
-                        return Y;
-                    }
-                    else {
+                        Y = sourceStyle.y.replace('px', '');
+                        return Number(Y) + 2 * sourceStyle.height.replace('px', '');
+                    } else {
                         const sourceClass = document.querySelector('.image-' + d.group);
                         const sourceStyle = getComputedStyle(sourceClass);
                         const Y = sourceStyle.y.replace('px', '');
-                        return Number(Y) + 0.5*((sourceStyle.height).replace('px',''));
+                        return Number(Y) + 0.5 * sourceStyle.height.replace('px', '');
                     }
                 });
 
